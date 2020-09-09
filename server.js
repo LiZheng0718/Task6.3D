@@ -16,7 +16,7 @@ app.use(session({
     secret : '$$$SIT313Secret',
     resave: false,
     saveUninitialized: false, 
-    cookie: {maxAge: 120000 }
+    cookie: {maxAge: 10000}
   }))
 app.use(flash())
 app.use(passport.initialize())
@@ -144,35 +144,25 @@ userSchema.pre('save', function(next) {
 userSchema.plugin(passportLocalMongoose);
 
 const User  =  mongoose.model("User", userSchema)
+
 passport.use('local', new LocalStrategy({
     usernameField:"email",
     passReqToCallback:true},
     function (req,username, password, done) {
-        User.findOne({email:username},function(error,user){
-        if(error){ 
-            return next(error);
-        }else if (!user) {
-            return done(null, false, (req.flash('error', 'Incorrect username.')));
-        }else {
-            bcrypt.compare(password , user.password, function(err, isMatch) 
-            {
-            if (err|| !isMatch) {
-                return done(null, false, { message: 'Incorrect password.' });
-            }else{
-                return done(null, user);
-            }
-        })
-    }
-})}
+        User.findOne({email:username},function(error,user){       
+            return done(null, user);           
+       })
+   }
 ))
-//passport.serializeUser(User.serializeUser())
-//passport.deserializeUser(User.deserializeUser())
 passport.serializeUser(function (user, done) {
-    done(null, user.id);
-});
+    User.findById(user.id,function(err,user){
+        console.log("1"+ user.email)
+    done(null, user.id)
+})});
 
 passport.deserializeUser(function(id, done) {
     User.findById(id, function(err, user) {
+        console.log("2"+ user.zip)
       done(err, user);
     });
   });
@@ -189,13 +179,38 @@ app.get('/reqtask' , (req,res)=>{
 app.get('/register',(req,res)=>{
     res.sendFile(__dirname + "/register.html")
 })
-app.post('/reqsignup',passport.authenticate('local', {
-    successRedirect: '/reqtask',
-    failureRedirect: '/reqsignup',
-       // req.flash(message)
-    failureFlash: true,
-      // failureFlash: 'Please check you input.' 
-    }));
+app.post('/reqsignup', (req,res)=>{
+    User.findOne({email:req.body.email},function(error,user){
+        if(error){ 
+            return next(error);
+        }else if (!user) {
+            res.send('The email has not created account');
+        }else {
+            bcrypt.compare(req.body.password , user.password, function(err, isMatch) 
+            {
+            if (err|| !isMatch) {
+                res.send('Wrong Password');
+            }else{
+                if(user.email == "1379380046@qq.com"){
+                    console.log("No save")
+                    res.sendFile(__dirname + '/reqtask.html')
+                }else
+              passport.authenticate('local')(req, res , () => {res.redirect('/reqtask')})
+            }
+        })
+    }
+})})
+// passport.authenticate('local', {
+//     successRedirect: '/reqtask',
+//     failureRedirect: '/reqsignup',
+//        // req.flash(message)
+//     failureFlash: true,
+//       // failureFlash: 'Please check you input.' 
+//     })
+//  //   }
+// )
+
+//     ;
 
 app.post('/register' , (req,res)=>{
         var user=new User(
