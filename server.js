@@ -161,10 +161,9 @@ passport.use('local', new LocalStrategy({
     usernameField:"email",
     passReqToCallback:true},
     function (req,username, password, done) {
-     //   User.findOne({email:username},function(error,user){    
-         //   console.log(session)     
+        User.findOne({email:username},function(error,user){   
             return done(null, user);           
-      // })
+     })
    }
 ))
 passport.serializeUser(function (user, done) {
@@ -211,7 +210,7 @@ app.post('/reqsignup', (req,res)=>{
                     res.sendFile(__dirname + '/reqtask.html')
                 }else
               passport.authenticate('local')(req, res , () => {
-                
+                console.log("1")
                 res.redirect('/reqtask')})
             }
         })
@@ -270,7 +269,8 @@ app.post('/forgetpassword' , (req,res)=>{
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/register' }),
   function(req, res) {
-      res.sendFile(__dirname + '/reqtask.html')
+      //res.sendFile(__dirname + '/reqtask.html')
+      res.redirect('/reqtask')
   });
 let port = process.env.PORT;
  if (port == null || port == "") {
