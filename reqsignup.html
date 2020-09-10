@@ -42,15 +42,29 @@
                                     <input name="password" type="text" class="form-control" placeholder="">
                                 </div>
                                <button name="login" type="submit" class="btnlogin">Log in</button>
-                            </form>
                             <input type="checkbox" name = "remember" > Remember password
+                        </form>
                             <form action="/forgetpassword" method="POST">
                             <button name="forget" type="submit" class="btnreset" action="/forgetpassword">Forgot password?</button>
                         </form>
-                       
-            </div>
+                        <a href="/auth/google">Sign In with Google</a>
+                        <!-- <form action="/google" method="POST">
+                            <button>
+                        <div class="g-signin2" data-onsuccess="onSignIn"></div></button>
+                        <script>
+                            function onSignIn(googleUser) {
+                              var profile = googleUser.getBasicProfile();
+                              window.location.href = "register"
+                              gapi.auth2.getAuthInstance().disconnect().then(function () {})
+                            }
+                            </script>  
+                        </div>
+                        
+                    </form> -->
+                   
         </div>
     </div>
+</div>
 </div>
 </form>
 </body>

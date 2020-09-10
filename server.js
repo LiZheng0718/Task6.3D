@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const app = express();
-const passport = require('passport') ,LocalStrategy = require('passport-local').Strategy;
+const passport = require('passport') ,LocalStrategy = require('passport-local').Strategy, GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
 const bcrypt = require('bcrypt');
 const session = require('express-session')
 const flash = require('connect-flash');
@@ -10,6 +10,7 @@ const passportLocalMongoose = require ('passport-local-mongoose')
 const validator = require("validator");
 const SALT_WORK_FACTOR = 5;
 var problem = 0;
+
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.static("public"))
 app.use(session({
@@ -140,33 +141,47 @@ userSchema.pre('save', function(next) {
     });
 });
 
-
 userSchema.plugin(passportLocalMongoose);
 
 const User  =  mongoose.model("User", userSchema)
 
+passport.use(new GoogleStrategy({
+    clientID:     "186607215388-4mof6ndj63970hrpm4v4h8eea4rvdebj.apps.googleusercontent.com",
+    clientSecret: "khnnjH9Quzf1adiHnL5gvcFb",
+    callbackURL: "http://localhost:8000/auth/google/callback"
+  },
+  function( accessToken, refreshToken, profile, done) {
+   // User.findOne({ googleId: profile.id }, function (err, user) {
+  //      console.log("run"+profile.id)
+      return done(null, profile);
+  //  });
+  }
+));
 passport.use('local', new LocalStrategy({
     usernameField:"email",
     passReqToCallback:true},
     function (req,username, password, done) {
-        User.findOne({email:username},function(error,user){       
+     //   User.findOne({email:username},function(error,user){    
+         //   console.log(session)     
             return done(null, user);           
-       })
+      // })
    }
 ))
 passport.serializeUser(function (user, done) {
-    User.findById(user.id,function(err,user){
-        console.log("1"+ user.email)
-    done(null, user.id)
-})});
+   // User.findById(user,function(err,user){
+    done(null, user)
+//})
+});
 
-passport.deserializeUser(function(id, done) {
-    User.findById(id, function(err, user) {
-        console.log("2"+ user.zip)
-      done(err, user);
-    });
+passport.deserializeUser(function(user, done) {
+   // User.findById(user, function(err, user) {
+      done(null, user);
+  //  });
   });
 app.get('/reqsignup',(req,res)=>{
+    if (req.isAuthenticated()){
+        console.log("saved")
+    }
     res.sendFile(__dirname + "/reqsignup.html")
  })
 app.get('/reqtask' , (req,res)=>{
@@ -191,27 +206,17 @@ app.post('/reqsignup', (req,res)=>{
             if (err|| !isMatch) {
                 res.send('Wrong Password');
             }else{
-                if(user.email == "1379380046@qq.com"){
-                    console.log("No save")
+             checkedValue = req.body.remember;    
+                if(!checkedValue){
                     res.sendFile(__dirname + '/reqtask.html')
                 }else
-              passport.authenticate('local')(req, res , () => {res.redirect('/reqtask')})
+              passport.authenticate('local')(req, res , () => {
+                
+                res.redirect('/reqtask')})
             }
         })
     }
 })})
-// passport.authenticate('local', {
-//     successRedirect: '/reqtask',
-//     failureRedirect: '/reqsignup',
-//        // req.flash(message)
-//     failureFlash: true,
-//       // failureFlash: 'Please check you input.' 
-//     })
-//  //   }
-// )
-
-//     ;
-
 app.post('/register' , (req,res)=>{
         var user=new User(
             {
@@ -228,7 +233,6 @@ app.post('/register' , (req,res)=>{
             }
         )
         user.save(function (error) {
-            
          if(error){
         if(problem == 1){
             res.send("all inputs except Zip/Postal code and phone number are given!");
@@ -253,11 +257,25 @@ app.post('/reregister' , (req,res)=>{
 app.post('/forgetpassword' , (req,res)=>{
     res.redirect("forgetpassword")
 })
+// app.post('/google', (req,res)=>{
+//    // console.log("forgetpassword")
+//    res.redirect("register")
+//    // onSignIn(googleUser)
+// })
+ app.get('/auth/google',
+ passport.authenticate('google', { scope: 
+     [ 'https://www.googleapis.com/auth/plus.login' ] }
+));
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/register' }),
+  function(req, res) {
+      res.sendFile(__dirname + '/reqtask.html')
+  });
 let port = process.env.PORT;
  if (port == null || port == "") {
    port = 8000;
  }
-
 app.listen(port, (req,res)=>{
     console.log("Server is running successfullly!")
 })
