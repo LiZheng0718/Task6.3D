@@ -2,10 +2,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const app = express();
-const passport = require('passport') ,LocalStrategy = require('passport-local').Strategy, GoogleStrategy = require( 'passport-google-oauth2' ).Strategy;
+const passport = require('passport') ,LocalStrategy = require('passport-local').Strategy, GoogleStrategy = require( 'passport-google-oauth2' ).Strategy
 const bcrypt = require('bcrypt');
 const session = require('express-session')
 const flash = require('connect-flash');
+var cookieParser = require('cookie-parser');
 const passportLocalMongoose = require ('passport-local-mongoose')
 const validator = require("validator");
 const SALT_WORK_FACTOR = 5;
@@ -17,7 +18,7 @@ app.use(session({
     secret : '$$$SIT313Secret',
     resave: false,
     saveUninitialized: false, 
-    cookie: {maxAge: 10000}
+    cookie: {maxAge: 20000}
   }))
 app.use(flash())
 app.use(passport.initialize())
@@ -151,10 +152,7 @@ passport.use(new GoogleStrategy({
     callbackURL: "http://localhost:8000/auth/google/callback"
   },
   function( accessToken, refreshToken, profile, done) {
-   // User.findOne({ googleId: profile.id }, function (err, user) {
-  //      console.log("run"+profile.id)
       return done(null, profile);
-  //  });
   }
 ));
 passport.use('local', new LocalStrategy({
@@ -165,7 +163,7 @@ passport.use('local', new LocalStrategy({
             return done(null, user);           
      })
    }
-))
+));
 passport.serializeUser(function (user, done) {
    // User.findById(user,function(err,user){
     done(null, user)
@@ -178,9 +176,8 @@ passport.deserializeUser(function(user, done) {
   //  });
   });
 app.get('/reqsignup',(req,res)=>{
-    if (req.isAuthenticated()){
-        console.log("saved")
-    }
+  //  if (req.isAuthenticated()){
+  //  }
     res.sendFile(__dirname + "/reqsignup.html")
  })
 app.get('/reqtask' , (req,res)=>{
@@ -191,9 +188,21 @@ app.get('/reqtask' , (req,res)=>{
     }
 })
 app.get('/register',(req,res)=>{
+  // res.render('register' );
     res.sendFile(__dirname + "/register.html")
 })
+app.get('/forgetpassword',(req,res)=>{
+    // res.render('register' );
+      res.sendFile(__dirname + "/forgetpassword.html")
+  })
+app.get('/reset',(req,res)=>{
+    res.sendFile(__dirname + "/reset.html")
+})
 app.post('/reqsignup', (req,res)=>{
+    if (req.isAuthenticated()){
+
+    }
+        
     User.findOne({email:req.body.email},function(error,user){
         if(error){ 
             return next(error);
@@ -210,8 +219,8 @@ app.post('/reqsignup', (req,res)=>{
                     res.sendFile(__dirname + '/reqtask.html')
                 }else
               passport.authenticate('local')(req, res , () => {
-                console.log("1")
-                res.redirect('/reqtask')})
+                res.redirect('/reqtask')
+            })
             }
         })
     }
@@ -232,7 +241,7 @@ app.post('/register' , (req,res)=>{
             }
         )
         user.save(function (error) {
-         if(error){
+        if(error){
         if(problem == 1){
             res.send("all inputs except Zip/Postal code and phone number are given!");
         }else if(req.body.password != req.body.confirmpassword){
@@ -256,16 +265,34 @@ app.post('/reregister' , (req,res)=>{
 app.post('/forgetpassword' , (req,res)=>{
     res.redirect("forgetpassword")
 })
-// app.post('/google', (req,res)=>{
-//    // console.log("forgetpassword")
-//    res.redirect("register")
-//    // onSignIn(googleUser)
-// })
+app.post('/sendemail' , (req,res)=>{
+    res.send("Reset password email has been sent")
+})
  app.get('/auth/google',
  passport.authenticate('google', { scope: 
      [ 'https://www.googleapis.com/auth/plus.login' ] }
 ));
-
+app.post('/reset', (req,res)=>{
+    User.findOne({email:req.body.email},function(error,user){   
+        if(error) return error
+        else if(user.firstname!= req.body.firstname){
+            res.send("Wrong information, please check your firstname and input again!")
+        }
+        else{
+            bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+            if (err) return next(err);
+                bcrypt.hash(req.body.password, salt, function(err, hash) {
+                if (err) return next(err);
+                User.updateOne({email:user.email},{$set:{password:hash}},function(err,user){
+                    if (err){}
+                    else{
+                    res.send("reset password successfully!")
+                }
+            })
+        })   
+    })
+}})
+})
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/register' }),
   function(req, res) {
