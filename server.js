@@ -8,7 +8,7 @@ const session = require('express-session')
 const flash = require('connect-flash');
 var cookieParser = require('cookie-parser');
 var nodemailer = require('nodemailer');
-const Account_Email= require("./email.js")
+const Account_mail= require("./email.js")
 const passportLocalMongoose = require ('passport-local-mongoose')
 const validator = require("validator");
 const SALT_WORK_FACTOR = 5;
@@ -305,13 +305,12 @@ app.listen(port, (req,res)=>{
     console.log("Server is running successfully!")
 })
 app.post('/sendemail', function(req, res) {
-    var mail = req.body.email;
-    Account_Email.send({
+    Account_mail.send({
     from: '"LiZHENG" <zhengli990718@gmail.com>', 
-    to: mail, 
+    to: req.body.email, 
     subject: 'iCrowTask',
     text: 'Reset account password', 
-    html: '<h3>Please click the link to reset your password！</h3><a href="http://localhost:8000/reset">Click me</a>'
+    html: '<a href="http://localhost:8000/reset">Please click this link to reset your password！</a>'
   });
     res.send("Reset password email has been sent")
 });
