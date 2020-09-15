@@ -24,7 +24,8 @@ app.use(session({
 app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())
-mongoose.connect("mongodb://localhost/iCrowdTaskDB", { useNewUrlParser: true,useUnifiedTopology: true});
+//mongoose.connect("mongodb://localhost/iCrowdTaskDB", { useNewUrlParser: true,useUnifiedTopology: true});
+mongoose.connect("mongodb+srv://lizheng:990718@sit314.mwk2t.mongodb.net/iCrowdTaskDB?retryWrites=true&w=majority", { useNewUrlParser: true,useUnifiedTopology: true});
 const userSchema = new mongoose.Schema({
     country:{ 
         type:String, 
