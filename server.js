@@ -148,9 +148,9 @@ userSchema.plugin(passportLocalMongoose);
 const User  =  mongoose.model("User", userSchema)
 
 passport.use(new GoogleStrategy({
-    clientID:     "186607215388-4mof6ndj63970hrpm4v4h8eea4rvdebj.apps.googleusercontent.com",
-    clientSecret: "khnnjH9Quzf1adiHnL5gvcFb",
-    callbackURL: "http://localhost:8000/auth/google/callback"
+    clientID:     "186607215388-peeak338fflsld0mkrd1nvmjig10cdnd.apps.googleusercontent.com",
+    clientSecret: "YUGHC1bBAaqwH7H3ICkSUpe3",
+    callbackURL: "http://lizheng.herokuapp.com/auth/google/callback"
   },
   function( accessToken, refreshToken, profile, done) {
       return done(null, profile);
@@ -304,7 +304,7 @@ app.post('/sendemail', function(req, res) {
     to: req.body.email, 
     subject: 'iCrowTask',
     text: 'Reset account password', 
-    html: '<a href="http://localhost:8000/reset">Please click this link to reset your password！</a>'
+    html: '<a href="https://lizheng.herokuapp.com/reset">Please click this link to reset your password！</a>'
   });
     res.send("Reset password email has been sent")
 });
