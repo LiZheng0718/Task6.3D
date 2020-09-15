@@ -18,31 +18,12 @@
     color: white;
     margin-top: 20%;
 }
-.register-left input{
-    border: none;
-    border-radius: 1.5rem;
-    padding: 2%;
-    width: 60%;
-    background: #f8f9fa;
-    font-weight: bold;
-    color: #383d41;
-    margin-top: 30%;
-    margin-bottom: 3%;
-    cursor: pointer;
-}
 .register-right{
     background: #f8f9fa;
     border-top-left-radius: 10% 50%;
     border-bottom-left-radius: 10% 50%;
 }
-@-webkit-keyframes mover {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-20px); }
-}
-@keyframes mover {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-20px); }
-}
+
 .register-left p{
     font-weight: lighter;
     padding: 20%;
@@ -59,15 +40,4 @@
     margin-bottom: -15%;
     color: darkblue;
 }
-.bs-docs-header .aff,
-.bs-docs-header .aff:hover,
-.bs-docs-header .aff:active {
-    color: white!important;
-    text-decoration: underline;
-}
 
-.bs-docs-header .btn {
-    padding: 15px 30px;
-    font-size: 20px;
-    margin-top:30px;
-}
