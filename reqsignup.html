@@ -18,7 +18,8 @@
 </head>
 <body>
   
-    <div class="container register">
+    <div class="container">
+        <div class="register">
         <div class="row">
             <div class="col-md-3" >
             <div class="register-left">
@@ -31,8 +32,8 @@
                         <p class="register-heading">Log in your Account</p>
                         <h3 class="register-heading">Requester log in</h3>
                         <div class="row">
-                        <div class="register-form">
-                            <div class="col-md-6">
+                            <div class="register-form">
+                                <div class="col-md-6">
                                 <form action="/reregister" method="POST">
                                     <button name="register" type="submit" class="btnRegister"  value="register" action="/reregister">Sign up</button>
                                 </form>
@@ -45,17 +46,19 @@
                                     <label> Your Password </label>
                                     <input name="password" type="text" class="form-control" placeholder="">
                                 </div>
-                               <button name="login" type="submit" class="btnlogin">Log in</button>
-                            <input type="checkbox" name = "remember" > Remember password
-                        </form>
-                            <form action="/forgetpassword" method="POST">
-                            <button name="forget" type="submit" class="btnreset" action="/forgetpassword">Forgot password?</button>
-                        </form>
-                        <a href="/auth/google">Sign In with Google</a>        
+                                <button name="login" type="submit" class="btnlogin">Log in</button>
+                                <input type="checkbox" name = "remember" > Remember password
+                                </form>
+                                <form action="/forgetpassword" method="POST">
+                                <button name="forget" type="submit" class="btnreset" action="/forgetpassword">Forgot password?</button>
+                                </form>
+                                <a href="/auth/google">Sign In with Google</a>        
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
         </div>
-    </div>
-    </div>
-    </div>
 </div>
 </div>
 </form>
