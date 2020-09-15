@@ -9,6 +9,7 @@ const flash = require('connect-flash');
 var cookieParser = require('cookie-parser');
 var nodemailer = require('nodemailer');
 const Account_mail= require("./email.js")
+var PORT = process.env.PORT || 8000
 const passportLocalMongoose = require ('passport-local-mongoose')
 const validator = require("validator");
 const SALT_WORK_FACTOR = 5;
