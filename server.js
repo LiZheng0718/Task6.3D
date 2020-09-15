@@ -298,11 +298,11 @@ app.get('/auth/google/callback',
   function(req, res) {
       res.redirect('/')
   });
-let port = process.env.PORT;
- if (port == null || port == "") {
-   port = 8000;
- }
-app.listen(port, (req,res)=>{
+// let port = process.env.PORT;
+//  if (port == null || port == "") {
+//    port = 8000;
+//  }
+app.listen(PORT, (req,res)=>{
     console.log("Server is running successfully!")
 })
 app.post('/sendemail', function(req, res) {
