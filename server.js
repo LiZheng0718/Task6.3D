@@ -299,7 +299,7 @@ app.get('/auth/google/callback',
   });
   let port = process.env.PORT;
   if (port == null || port == "") {
-    port = 8000;
+    port = 80;
   }
  app.listen(port, (req,res)=>{
      console.log("Server is running successfully!")
