@@ -7,11 +7,12 @@ const bcrypt = require('bcrypt');
 const session = require('express-session')
 const flash = require('connect-flash');
 var cookieParser = require('cookie-parser');
+var nodemailer = require('nodemailer');
+const Account_Email= require("./email.js")
 const passportLocalMongoose = require ('passport-local-mongoose')
 const validator = require("validator");
 const SALT_WORK_FACTOR = 5;
 var problem = 0;
-
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.static("public"))
 app.use(session({
@@ -23,7 +24,7 @@ app.use(session({
 app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())
-mongoose.connect("mongodb://localhost/Test1", { useNewUrlParser: true,useUnifiedTopology: true});
+mongoose.connect("mongodb://localhost/iCrowdTaskDB", { useNewUrlParser: true,useUnifiedTopology: true});
 const userSchema = new mongoose.Schema({
     country:{ 
         type:String, 
@@ -180,7 +181,7 @@ app.get('/reqsignup',(req,res)=>{
   //  }
     res.sendFile(__dirname + "/reqsignup.html")
  })
-app.get('/reqtask' , (req,res)=>{
+app.get('/' , (req,res)=>{
     if (req.isAuthenticated()){
         res.sendFile(__dirname + "/reqtask.html")
     }else{
@@ -219,29 +220,30 @@ app.post('/reqsignup', (req,res)=>{
                     res.sendFile(__dirname + '/reqtask.html')
                 }else
               passport.authenticate('local')(req, res , () => {
-                res.redirect('/reqtask')
+                res.redirect('/')
             })
             }
         })
     }
-})})
+})
+})
 app.post('/register' , (req,res)=>{
-        var user=new User(
-            {
-                country:req.body.country,
-                firstname:req.body.firstname,
-                lastname:req.body.lastname,
-                email:req.body.email,
-                password:req.body.password,
-                address:req.body.address, 
-                city:req.body.city,
-                state:req.body.state,
-                zip:req.body.zip,
-                mobile:req.body.mobile
-            }
-        )
-        user.save(function (error) {
-        if(error){
+    var user=new User(
+        {
+            country:req.body.country,
+            firstname:req.body.firstname,
+            lastname:req.body.lastname,
+            email:req.body.email,
+            password:req.body.password,
+            address:req.body.address, 
+            city:req.body.city,
+            state:req.body.state,
+            zip:req.body.zip,
+            mobile:req.body.mobile
+        }
+    )
+    user.save(function (error) {
+    if(error){
         if(problem == 1){
             res.send("all inputs except Zip/Postal code and phone number are given!");
         }else if(req.body.password != req.body.confirmpassword){
@@ -251,10 +253,10 @@ app.post('/register' , (req,res)=>{
         }else if(problem == 4 || problem == 5){
             res.send("The email address and mobile phone number must be valid!");
         }
-        }else{
-            res.send("Register successfully!");
-        }
-    });
+    }else{
+        res.send("Register successfully!");
+    }
+})
 })
 app.post('/relogin' , (req,res)=>{
     res.redirect("reqsignup")
@@ -264,9 +266,6 @@ app.post('/reregister' , (req,res)=>{
 })
 app.post('/forgetpassword' , (req,res)=>{
     res.redirect("forgetpassword")
-})
-app.post('/sendemail' , (req,res)=>{
-    res.send("Reset password email has been sent")
 })
  app.get('/auth/google',
  passport.authenticate('google', { scope: 
@@ -296,13 +295,23 @@ app.post('/reset', (req,res)=>{
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/register' }),
   function(req, res) {
-      //res.sendFile(__dirname + '/reqtask.html')
-      res.redirect('/reqtask')
+      res.redirect('/')
   });
 let port = process.env.PORT;
  if (port == null || port == "") {
    port = 8000;
  }
 app.listen(port, (req,res)=>{
-    console.log("Server is running successfullly!")
+    console.log("Server is running successfully!")
 })
+app.post('/sendemail', function(req, res) {
+    var mail = req.body.email;
+    Account_Email.send({
+    from: '"LiZHENG" <zhengli990718@gmail.com>', 
+    to: mail, 
+    subject: 'iCrowTask',
+    text: 'Reset account password', 
+    html: '<h3>Please click the link to reset your password！</h3><a href="http://localhost:8000/reset">Click me</a>'
+  });
+    res.send("Reset password email has been sent")
+});
