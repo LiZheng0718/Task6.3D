@@ -1,8 +1,4 @@
 @charset "utf-8";
-body{
-    background-color: darkorange;
-    color:red;
-}
 .container-fluid {
     padding:0px;
 }
@@ -11,14 +7,6 @@ body{
     padding: 30px;
     margin: 0;
     box-sizing: border-box;
-}
-.example {
-    border: 1px solid #e5e5e5;
-    background-color: #fcfcfc;
-    padding: 1em;
-}
-.example .html {
-    margin: 2em 0em 0em 0em;
 }
 .register{
     background: -webkit-linear-gradient(left, #3931af, #00c6ff); 
