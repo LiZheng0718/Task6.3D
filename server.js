@@ -297,13 +297,7 @@ app.get('/auth/google/callback',
   function(req, res) {
       res.redirect('/')
   });
-  let port = process.env.PORT;
-  if (port == null || port == "") {
-    port = 80;
-  }
- app.listen(port, (req,res)=>{
-     console.log("Server is running successfully!")
- })
+
 app.post('/sendemail', function(req, res) {
     Account_mail.send({
     from: '"LiZHENG" <zhengli990718@gmail.com>', 
@@ -314,3 +308,10 @@ app.post('/sendemail', function(req, res) {
   });
     res.send("Reset password email has been sent")
 });
+let port = process.env.PORT;
+if (port == null || port == "") {
+  port = 8000;
+}
+app.listen(port, (req,res)=>{
+   console.log("Server is running successfully!")
+})
