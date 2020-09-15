@@ -9,7 +9,6 @@ const flash = require('connect-flash');
 var cookieParser = require('cookie-parser');
 var nodemailer = require('nodemailer');
 const Account_mail= require("./email.js")
-var PORT = process.env.PORT || 8000
 const passportLocalMongoose = require ('passport-local-mongoose')
 const validator = require("validator");
 const SALT_WORK_FACTOR = 5;
@@ -298,9 +297,13 @@ app.get('/auth/google/callback',
   function(req, res) {
       res.redirect('/')
   });
-app.listen(PORT, (req,res)=>{
-    console.log("Server is running successfully!")
-})
+  let port = process.env.PORT;
+  if (port == null || port == "") {
+    port = 8000;
+  }
+ app.listen(port, (req,res)=>{
+     console.log("Server is running successfully!")
+ })
 app.post('/sendemail', function(req, res) {
     Account_mail.send({
     from: '"LiZHENG" <zhengli990718@gmail.com>', 
