@@ -24,7 +24,6 @@ app.use(session({
 app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())
-//mongoose.connect("mongodb://localhost/iCrowdTaskDB", { useNewUrlParser: true,useUnifiedTopology: true});
 mongoose.connect("mongodb+srv://lizheng:990718@sit314.mwk2t.mongodb.net/iCrowdTaskDB?retryWrites=true&w=majority", { useNewUrlParser: true,useUnifiedTopology: true});
 const userSchema = new mongoose.Schema({
     country:{ 
@@ -303,7 +302,7 @@ app.post('/sendemail', function(req, res) {
     Account_mail.send({
     from: '"LiZHENG" <zhengli990718@gmail.com>', 
     to: req.body.email, 
-    subject: 'iCrowTask',
+    subject: 'iCrowdTask',
     text: 'Reset account password', 
     html: '<a href="https://lizheng.herokuapp.com/reset">Please click this link to reset your password！</a>'
   });
