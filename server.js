@@ -24,17 +24,18 @@ app.use(session({
 app.use(flash())
 app.use(passport.initialize())
 app.use(passport.session())
+//mongoose.connect("mongodb://localhost/iCrowdTaskDB6", { useNewUrlParser: true,useUnifiedTopology: true});
 mongoose.connect("mongodb+srv://lizheng:990718@sit314.mwk2t.mongodb.net/iCrowdTaskDB?retryWrites=true&w=majority", { useNewUrlParser: true,useUnifiedTopology: true});
 const userSchema = new mongoose.Schema({
     country:{ 
         type:String, 
       //  required: true,
-       // validate(value){
-          //  if(validator.isEmpty(value)){
-          //      problem = 1
-          //      throw new Error('Please input mobile!')
-         //   }
-       // }
+        validate(value){
+            if(validator.isEmpty(value)){
+                problem = 1
+                throw new Error('Please input mobile!')
+            }
+        }
     },
     firstname: {
         type: String,
@@ -56,11 +57,12 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
-    email:{ 
+    username:{ 
         type:String, 
      //   required: true,
         trim: true,
         lowercase:true,
+        unique: true,
         validate(value){
              if(validator.isEmpty(value)){
                  problem = 1
@@ -160,7 +162,7 @@ passport.use('local', new LocalStrategy({
     usernameField:"email",
     passReqToCallback:true},
     function (req,username, password, done) {
-        User.findOne({email:username},function(error,user){   
+        User.findOne({username:username},function(error,user){   
             return done(null, user);           
      })
    }
@@ -204,7 +206,7 @@ app.post('/reqsignup', (req,res)=>{
 
     }
         
-    User.findOne({email:req.body.email},function(error,user){
+    User.findOne({username:req.body.email},function(error,user){
         if(error){ 
             return next(error);
         }else if (!user) {
@@ -233,7 +235,7 @@ app.post('/register' , (req,res)=>{
             country:req.body.country,
             firstname:req.body.firstname,
             lastname:req.body.lastname,
-            email:req.body.email,
+            username:req.body.email,
             password:req.body.password,
             address:req.body.address, 
             city:req.body.city,
@@ -243,20 +245,21 @@ app.post('/register' , (req,res)=>{
         }
     )
     user.save(function (error) {
-    if(error){
-        if(problem == 1){
-            res.send("all inputs except Zip/Postal code and phone number are given!");
-        }else if(req.body.password != req.body.confirmpassword){
-            res.send("Confirm password need to be the same as password!");      
-        }else if(problem == 3){
-            res.send("The password must be at least 8 characters!");            
-        }else if(problem == 4 || problem == 5){
-            res.send("The email address and mobile phone number must be valid!");
-        }
-    }else{
-        res.send("Register successfully!");
-    }
-})
+        if(error){
+       if(problem == 1){
+           res.send("all inputs except Zip/Postal code and phone number are given!");
+       }else if(req.body.password != req.body.confirmpassword){
+           res.send("Confirm password need to be the same as password!");      
+       }else if(problem == 3){
+           res.send("The password must be at least 8 characters!");            
+       }else if(problem == 4 || problem == 5){
+           res.send("The email address and mobile phone number must be valid!");
+       }
+       console.log(error)
+       }else{
+           res.send("Register successfully!");
+       }
+   })
 })
 app.post('/relogin' , (req,res)=>{
     res.redirect("reqsignup")
@@ -272,7 +275,7 @@ app.post('/forgetpassword' , (req,res)=>{
      [ 'https://www.googleapis.com/auth/plus.login' ] }
 ));
 app.post('/reset', (req,res)=>{
-    User.findOne({email:req.body.email},function(error,user){   
+    User.findOne({username:req.body.email},function(error,user){   
         if(error) return error
         else if(user.firstname!= req.body.firstname){
             res.send("Wrong information, please check your firstname and input again!")
@@ -282,7 +285,7 @@ app.post('/reset', (req,res)=>{
             if (err) return next(err);
                 bcrypt.hash(req.body.password, salt, function(err, hash) {
                 if (err) return next(err);
-                User.updateOne({email:user.email},{$set:{password:hash}},function(err,user){
+                User.updateOne({username:user.email},{$set:{password:hash}},function(err,user){
                     if (err){}
                     else{
                     res.send("reset password successfully!")
