@@ -29,12 +29,12 @@ const userSchema = new mongoose.Schema({
     country:{ 
         type:String, 
       //  required: true,
-        validate(value){
-            if(validator.isEmpty(value)){
-                problem = 1
-                throw new Error('Please input mobile!')
-            }
-        }
+       // validate(value){
+          //  if(validator.isEmpty(value)){
+          //      problem = 1
+          //      throw new Error('Please input mobile!')
+         //   }
+       // }
     },
     firstname: {
         type: String,
