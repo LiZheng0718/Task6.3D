@@ -285,7 +285,7 @@ app.post('/reset', (req,res)=>{
             if (err) return next(err);
                 bcrypt.hash(req.body.password, salt, function(err, hash) {
                 if (err) return next(err);
-                User.updateOne({username:user.email},{$set:{password:hash}},function(err,user){
+                User.updateOne({username:user.username},{$set:{password:hash}},function(err,user){
                     if (err){}
                     else{
                     res.send("reset password successfully!")
